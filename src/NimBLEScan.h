@@ -26,6 +26,7 @@
 #include "nimble/nimble/host/include/host/ble_gap.h"
 #endif
 
+#include <functional>
 #include <vector>
 
 class NimBLEDevice;
@@ -62,7 +63,7 @@ private:
  */
 class NimBLEScan {
 public:
-    bool                start(uint32_t duration, void (*scanCompleteCB)(NimBLEScanResults), bool is_continue = false);
+    bool                start(uint32_t duration, std::function<void(NimBLEScanResults)> scanCompleteCB, bool is_continue = false);
     NimBLEScanResults   start(uint32_t duration, bool is_continue = false);
     bool                isScanning();
     void                setAdvertisedDeviceCallbacks(NimBLEAdvertisedDeviceCallbacks* pAdvertisedDeviceCallbacks, bool wantDuplicates = false);
@@ -89,14 +90,14 @@ private:
     void                onHostReset();
     void                onHostSync();
 
-    NimBLEAdvertisedDeviceCallbacks*    m_pAdvertisedDeviceCallbacks = nullptr;
-    void                                (*m_scanCompleteCB)(NimBLEScanResults scanResults);
-    ble_gap_disc_params                 m_scan_params;
-    bool                                m_ignoreResults;
-    NimBLEScanResults                   m_scanResults;
-    uint32_t                            m_duration;
-    ble_task_data_t                     *m_pTaskData;
-    uint8_t                             m_maxResults;
+    NimBLEAdvertisedDeviceCallbacks*       m_pAdvertisedDeviceCallbacks = nullptr;
+    std::function<void(NimBLEScanResults)> m_scanCompleteCB;
+    ble_gap_disc_params                    m_scan_params;
+    bool                                   m_ignoreResults;
+    NimBLEScanResults                      m_scanResults;
+    uint32_t                               m_duration;
+    ble_task_data_t                        *m_pTaskData;
+    uint8_t                                m_maxResults;
 };
 
 #endif /* CONFIG_BT_ENABLED CONFIG_BT_NIMBLE_ROLE_OBSERVER */
